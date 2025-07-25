@@ -1,0 +1,29 @@
+services:
+  shadowsocks:
+    image: shadowsocks/shadowsocks-libev
+    container_name: shadowsocks-raw
+    restart: always
+    network_mode: "host"
+    environment:
+      - SERVER_PORT=${SS_LOCAL_PORT:-24000}
+      - SERVER_ADDR=127.0.0.1
+      - METHOD=chacha20-ietf-poly1305
+      - PASSWORD=HELLOWORLD
+      - SS_LOCAL_PORT=${SS_LOCAL_PORT:-24000}
+
+  frpc:
+    image: fatedier/frpc:v0.63.0
+    container_name: frpc
+    restart: always
+    network_mode: "host"
+    environment:
+      - FRP_SERVER_ADDR=100.0.0.0
+      - FRP_SERVER_PORT=7200
+      - FRP_AUTH_TOKEN=HELLOWORLD
+      - SS_LOCAL_PORT=${SS_LOCAL_PORT:-24000}
+      - FRP_REMOTE_PORT=${FRP_REMOTE_PORT:-50000}
+    volumes:
+      - ./frpc.toml:/etc/frp/frpc.toml
+    command: ["-c", "/etc/frp/frpc.toml"]
+    depends_on:
+      - shadowsocks

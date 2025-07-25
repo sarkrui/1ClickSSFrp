@@ -1,0 +1,17 @@
+serverAddr = "{{ .Envs.FRP_SERVER_ADDR }}"
+serverPort = {{ .Envs.FRP_SERVER_PORT }}
+auth.token = "{{ .Envs.FRP_AUTH_TOKEN }}"
+
+[[proxies]]
+name = "shadowsocks-tcp"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = {{ .Envs.SS_LOCAL_PORT }}
+remotePort = {{ .Envs.FRP_REMOTE_PORT }}
+
+[[proxies]]
+name = "shadowsocks-udp"
+type = "udp"
+localIP = "127.0.0.1"
+localPort = {{ .Envs.SS_LOCAL_PORT }}
+remotePort = {{ .Envs.FRP_REMOTE_PORT }}
