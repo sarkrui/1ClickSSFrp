@@ -35,7 +35,9 @@
   ],
   "shadowsocks": {
     "local_port": 24000,
-    "remote_port": 50000
+    "remote_port": 50000,
+    "method": "chacha20-ietf-poly1305",
+    "password": "HELLOWORLD"
   },
   "docker": {
     "frpc_image": "fatedier/frpc:v0.63.0",

@@ -124,8 +124,8 @@ def main():
     environment:
       - SERVER_PORT=${SERVER_PORT:-""" + str(shadowsocks_config['local_port']) + """}
       - SERVER_ADDR=127.0.0.1
-      - METHOD=chacha20-ietf-poly1305
-      - PASSWORD=HELLOWORLD
+      - METHOD=""" + shadowsocks_config['method'] + """
+      - PASSWORD=""" + shadowsocks_config['password'] + """
 
 """
     
