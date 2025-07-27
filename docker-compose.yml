@@ -11,6 +11,7 @@ services:
       - PASSWORD=HELLOWORLD
       - SS_LOCAL_PORT=${SS_LOCAL_PORT:-24000}
 
+  # Original FRP client
   frpc:
     image: fatedier/frpc:v0.63.0
     container_name: frpc
@@ -24,6 +25,60 @@ services:
       - FRP_REMOTE_PORT=${FRP_REMOTE_PORT:-50000}
     volumes:
       - ./frpc.toml:/etc/frp/frpc.toml
+    command: ["-c", "/etc/frp/frpc.toml"]
+    depends_on:
+      - shadowsocks
+
+  # US FRP client
+  frpc-us:
+    image: fatedier/frpc:v0.63.0
+    container_name: frpc-us
+    restart: always
+    network_mode: "host"
+    environment:
+      - FRP_SERVER_ADDR=${FRP_US_SERVER_ADDR:-101.0.0.0}
+      - FRP_SERVER_PORT=${FRP_US_SERVER_PORT:-7200}
+      - FRP_AUTH_TOKEN=${FRP_US_AUTH_TOKEN:-HELLOWORLD}
+      - SS_LOCAL_PORT=${SS_LOCAL_PORT:-24000}
+      - FRP_REMOTE_PORT=${FRP_REMOTE_PORT:-50000}
+    volumes:
+      - ./frpc-us.toml:/etc/frp/frpc.toml
+    command: ["-c", "/etc/frp/frpc.toml"]
+    depends_on:
+      - shadowsocks
+
+  # EU FRP client
+  frpc-eu:
+    image: fatedier/frpc:v0.63.0
+    container_name: frpc-eu
+    restart: always
+    network_mode: "host"
+    environment:
+      - FRP_SERVER_ADDR=${FRP_EU_SERVER_ADDR:-102.0.0.0}
+      - FRP_SERVER_PORT=${FRP_EU_SERVER_PORT:-7200}
+      - FRP_AUTH_TOKEN=${FRP_EU_AUTH_TOKEN:-HELLOWORLD}
+      - SS_LOCAL_PORT=${SS_LOCAL_PORT:-24000}
+      - FRP_REMOTE_PORT=${FRP_REMOTE_PORT:-50000}
+    volumes:
+      - ./frpc-eu.toml:/etc/frp/frpc.toml
+    command: ["-c", "/etc/frp/frpc.toml"]
+    depends_on:
+      - shadowsocks
+
+  # Asia FRP client
+  frpc-asia:
+    image: fatedier/frpc:v0.63.0
+    container_name: frpc-asia
+    restart: always
+    network_mode: "host"
+    environment:
+      - FRP_SERVER_ADDR=${FRP_ASIA_SERVER_ADDR:-103.0.0.0}
+      - FRP_SERVER_PORT=${FRP_ASIA_SERVER_PORT:-7200}
+      - FRP_AUTH_TOKEN=${FRP_ASIA_AUTH_TOKEN:-HELLOWORLD}
+      - SS_LOCAL_PORT=${SS_LOCAL_PORT:-24000}
+      - FRP_REMOTE_PORT=${FRP_REMOTE_PORT:-50000}
+    volumes:
+      - ./frpc-asia.toml:/etc/frp/frpc.toml
     command: ["-c", "/etc/frp/frpc.toml"]
     depends_on:
       - shadowsocks
