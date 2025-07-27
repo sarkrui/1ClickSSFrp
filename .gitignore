@@ -5,5 +5,5 @@
 !frpc_template.toml
 !frp-servers.json
 !README.md
-!generate-frp-config.py
+!generate.py
 !.gitignore
