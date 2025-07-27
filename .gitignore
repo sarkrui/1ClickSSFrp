@@ -1,0 +1,9 @@
+# Ignore all files by default
+*
+
+# Include only these core files
+!frpc_template.toml
+!frp-servers.json
+!README.md
+!generate-frp-config.py
+!.gitignore
