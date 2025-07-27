@@ -1,0 +1,45 @@
+{
+  "servers": [
+    {
+      "name": "us",
+      "addr": "101.0.0.0", 
+      "port": 7200,
+      "token": "helloworld",
+      "enabled": false,
+      "description": "US FRP server"
+    },
+    {
+      "name": "eu",
+      "addr": "102.0.0.0",
+      "port": 7200, 
+      "token": "helloworld",
+      "enabled": false,
+      "description": "EU FRP server"
+    },
+    {
+      "name": "jp",
+      "addr": "103.0.0.0",
+      "port": 7200,
+      "token": "helloworld", 
+      "enabled": true,
+      "description": "JP FRP server"
+    },
+    {
+      "name": "hk",
+      "addr": "103.0.0.0",
+      "port": 7200,
+      "token": "helloworld", 
+      "enabled": true,
+      "description": "HK FRP server"
+    }
+  ],
+  "shadowsocks": {
+    "local_port": 24000,
+    "remote_port": 50000
+  },
+  "docker": {
+    "frpc_image": "fatedier/frpc:v0.63.0",
+    "restart_policy": "always",
+    "network_mode": "host"
+  }
+}
