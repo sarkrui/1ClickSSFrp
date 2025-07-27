@@ -1,85 +1,92 @@
-# 1ClickSSFrp - Shadowsocks + FRP Docker Setup
+# 1ClickSSFrp - Dynamic Multi-Location Shadowsocks + FRP
 
-This setup combines Shadowsocks proxy with FRP client to expose your Shadowsocks server through FRP tunneling using Docker containers.
+Dynamic Docker setup that exposes Shadowsocks through multiple FRP servers using JSON configuration.
 
 ## Quick Start
 
-1. **Configure FRP server connection**:
-   Edit `docker compose.yml` and update the environment variables:
-   - `FRP_SERVER_ADDR`: Your FRP server IP address (currently: 100.0.0.0)
-   - `FRP_SERVER_PORT`: Your FRP server port (default: 7200)
-   - `FRP_AUTH_TOKEN`: Your FRP server authentication token
-   - `FRP_REMOTE_PORT`: Remote port to expose (default: 50000)
+1. **Configure servers**:
+   Edit `frp-servers.json` to add/remove FRP servers:
+   ```json
+   {
+     "servers": [
+       {
+         "name": "jp",
+         "addr": "your-jp-server.com",
+         "port": 7200,
+         "token": "your-token",
+         "enabled": true,
+         "description": "JP FRP server"
+       }
+     ]
+   }
+   ```
 
-2. **Set Shadowsocks password**:
-   Edit `docker compose.yml` and change `PASSWORD=HELLOWORLD` to a secure password.
+2. **Generate configuration**:
+   ```bash
+   python3 generate-frp-config.py
+   ```
 
-3. **Start the services**:
+3. **Set environment variables**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your actual server addresses and tokens
+   ```
+
+4. **Start services**:
    ```bash
    docker compose up -d
    ```
 
 ## Architecture
 
-- **shadowsocks service**: Runs shadowsocks-libev with chacha20-ietf-poly1305 encryption
-- **frpc service**: FRP client that creates dual TCP/UDP proxies to forward Shadowsocks traffic
-- Both services use host networking mode for optimal performance
-- FRP client depends on Shadowsocks service for proper startup order
+- **shadowsocks**: Runs shadowsocks-libev with chacha20-ietf-poly1305 encryption
+- **frpc-[location]**: Multiple FRP clients, one per enabled server location
+- All services use host networking
+- FRP clients expose the same Shadowsocks port through different servers
 
-## Configuration Files
+## Configuration Management
 
-### docker compose.yml
-- **shadowsocks**: Runs shadowsocks-libev on configurable port (default: 24000)
-- **frpc**: Connects to FRP server and exposes shadowsocks port through both TCP and UDP proxies
+### Core Files
+- `frp-servers.json`: Server definitions and settings
+- `frpc_template.toml`: Template for generating FRP client configs
+- `generate-frp-config.py`: Script that generates all configuration files
 
-### frpc.toml
-- Uses Go template syntax to inject environment variables
-- Creates two proxies: "shadowsocks-tcp" and "shadowsocks-udp"
-- Forwards from `127.0.0.1:SS_LOCAL_PORT` to remote port via FRP server
-- Uses token-based authentication
+### Generated Files
+- `frpc-[location].toml`: FRP client configurations
+- `docker-compose.yml`: Complete service definitions
+- `.env.example`: Environment variable template
 
 ## Environment Variables
 
-Configure these in `docker compose.yml`:
-- `FRP_SERVER_ADDR`: FRP server IP address
-- `FRP_SERVER_PORT`: FRP server port (default: 7200)
-- `FRP_AUTH_TOKEN`: Authentication token for FRP server
-- `PASSWORD`: Shadowsocks server password
-- `SS_LOCAL_PORT`: Local Shadowsocks port (default: 24000)
+Set in `.env` file:
+- `SERVER_PORT`: Shadowsocks port (default: 24000)
 - `FRP_REMOTE_PORT`: Remote port exposed through FRP (default: 50000)
+- `FRP_[LOCATION]_SERVER_ADDR`: FRP server address per location
+- `FRP_[LOCATION]_SERVER_PORT`: FRP server port per location  
+- `FRP_[LOCATION]_AUTH_TOKEN`: Authentication token per location
 
-## Usage
+## Management
 
-1. Make sure your FRP server is running and accessible
-2. Update the environment variables in `docker compose.yml`
-3. Run `docker compose up -d` to start both services
-4. Connect Shadowsocks clients to `YOUR_FRP_SERVER:FRP_REMOTE_PORT`
+**Add/remove servers:**
+Edit `frp-servers.json`, then run `python3 generate.py`
 
-## Management Commands
-
-**Start services:**
+**Start all services:**
 ```bash
 docker compose up -d
 ```
 
-**Stop services:**
+**Start specific location:**
 ```bash
-docker compose down
-```
-
-**Restart specific service:**
-```bash
-docker compose restart shadowsocks
-docker compose restart frpc
+docker compose up -d frpc-jp
 ```
 
 **View logs:**
 ```bash
-docker compose logs -f
+docker compose logs -f frpc-jp
 ```
 
-**View specific service logs:**
-```bash
-docker compose logs -f shadowsocks
-docker compose logs -f frpc
-```
+## Usage
+
+Connect Shadowsocks clients to any enabled FRP server:
+- JP server: `your-jp-server.com:50000`
+- HK server: `your-hk-server.com:50000`
