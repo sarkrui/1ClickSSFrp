@@ -23,7 +23,7 @@ Dynamic Docker setup that exposes Shadowsocks through multiple FRP servers using
 
 2. **Generate configuration**:
    ```bash
-   python3 generate-frp-config.py
+   python3 generate.py
    ```
 
 3. **Set environment variables**:
